@@ -3,7 +3,6 @@ package dev.h4kt.ktorVkAuth.provider
 import dev.h4kt.ktorVkAuth.services.vk.auth.results.VkAuthenticationResult
 import io.ktor.http.*
 import io.ktor.server.auth.*
-import java.lang.Exception
 
 class VkAuthProvider(
     private val config: VkAuthConfig
