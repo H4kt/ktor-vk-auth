@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "dev.h4kt"
-version = "1.0"
+version = "1.0.1"
 
 val ktorVersion = "2.3.4"
 
@@ -25,9 +25,14 @@ repositories {
 }
 
 dependencies {
+
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
+
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.10")
+
 }
 
 kotlin {

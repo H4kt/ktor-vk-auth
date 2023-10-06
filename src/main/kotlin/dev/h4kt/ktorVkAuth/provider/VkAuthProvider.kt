@@ -3,6 +3,7 @@ package dev.h4kt.ktorVkAuth.provider
 import dev.h4kt.ktorVkAuth.services.vk.auth.results.VkAuthenticationResult
 import io.ktor.http.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 
 class VkAuthProvider(
     private val config: VkAuthConfig
@@ -12,29 +13,39 @@ class VkAuthProvider(
 
     override suspend fun onAuthenticate(context: AuthenticationContext) {
 
-        val authHeader = context
-            .call
+        val call = context.call
+
+        val authHeader = call
             .request
             .headers[HttpHeaders.Authorization]
             ?.split(" ")
-            ?: return
+            ?: run {
+                call.respond(HttpStatusCode.Unauthorized)
+                return
+            }
 
         if (authHeader.first() != "VK") {
+            call.respond(HttpStatusCode.Unauthorized)
             return
         }
 
         val rawUrl = authHeader.getOrNull(1)
-            ?: return
+            ?: run {
+                call.respond(HttpStatusCode.Unauthorized)
+                return
+            }
 
         val url = try {
             Url(rawUrl)
         } catch (ex: Exception) {
+            call.respond(HttpStatusCode.Unauthorized)
             return
         }
 
         val authResult = authService.authenticate(url.parameters)
 
         if (authResult !is VkAuthenticationResult.Success) {
+            call.respond(HttpStatusCode.Unauthorized)
             return
         }
 
@@ -43,8 +54,10 @@ class VkAuthProvider(
             authResult.vkUserId
         )
 
-        principal?.let {
-            context.principal(it)
+        if (principal != null) {
+            context.principal(principal)
+        } else {
+            call.respond(HttpStatusCode.Unauthorized)
         }
 
     }
