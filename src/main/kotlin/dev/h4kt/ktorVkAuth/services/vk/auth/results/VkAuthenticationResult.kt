@@ -1,14 +1,16 @@
 package dev.h4kt.ktorVkAuth.services.vk.auth.results
 
-sealed class VkAuthenticationResult {
+sealed interface VkAuthenticationResult {
 
-    data object NoSignatureProvided : VkAuthenticationResult()
-    data object NoUserIdProvided : VkAuthenticationResult()
+    sealed interface Error : VkAuthenticationResult
 
-    data object InvalidSignature : VkAuthenticationResult()
+    data object NoSignatureProvided : Error
+    data object NoUserIdProvided : Error
+
+    data object InvalidSignature : Error
 
     data class Success(
         val vkUserId: String
-    ) : VkAuthenticationResult()
+    ) : VkAuthenticationResult
 
 }

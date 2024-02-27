@@ -1,18 +1,16 @@
 plugins {
 
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.22"
 
-    id("signing")
     id("maven-publish")
-    id("co.uzzu.dotenv.gradle") version "1.2.0"
-    id("io.codearte.nexus-staging") version "0.30.0"
+    id("co.uzzu.dotenv.gradle") version "4.0.0"
 
 }
 
 group = "dev.h4kt"
 version = "1.0.1"
 
-val ktorVersion = "2.3.4"
+val ktorVersion: String by project
 
 val ossrhUsername = System.getenv("OSSRH_USERNAME")
     ?: env.fetchOrNull("OSSRH_USERNAME")
@@ -31,7 +29,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.10")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 
 }
 
@@ -44,72 +42,29 @@ java {
     withJavadocJar()
 }
 
-nexusStaging {
-
-    packageGroup = "dev.h4kt.xposed"
-
-    serverUrl = "https://s01.oss.sonatype.org/service/local/"
-    username = ossrhUsername
-    password = ossrhPassword
-
-}
-
 publishing {
 
     repositories {
         maven {
 
-            name = "MavenCentral"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            name = "H4kt"
+            url = uri("https://repo.h4kt.dev/releases")
+
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
 
             credentials {
-                username = ossrhUsername
-                password = ossrhPassword
+                username = env.H4KT_REPO_USERNAME.orNull() ?: System.getenv("H4KT_REPO_USERNAME")
+                password = env.H4KT_REPO_PASSWORD.orNull() ?: System.getenv("H4KT_REPO_PASSWORD")
             }
 
         }
     }
 
     publications.register("KtorVkAuth", MavenPublication::class) {
-
         artifactId = "ktor-vk-auth"
         from(components["java"])
-
-        pom {
-
-            packaging = "jar"
-
-            name.set("Ktor-vk-auth")
-            url.set("https://github.com/H4kt/ktor-vk-auth")
-            description.set("A simple implementation of VK mini app authentication for Ktor")
-
-            scm {
-                connection.set("scm:https://github.com/H4kt/ktor-vk-auth.git")
-                developerConnection.set("scm:git@github.com:H4kt/ktor-vk-auth.git")
-                url.set("https://github.com/H4kt/ktor-vk-auth")
-            }
-
-            licenses {
-                license {
-                    name.set("The Apache License, Version 2.0")
-                    url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                }
-            }
-
-            developers {
-                developer {
-                    id.set("H4kt")
-                    name.set("H4kt")
-                    email.set("h4ktoff@gmail.com")
-                }
-            }
-
-        }
-
-    }
-
-    signing {
-        publishing.publications.forEach(::sign)
     }
 
 }
