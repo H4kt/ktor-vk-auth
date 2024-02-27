@@ -4,18 +4,18 @@
 
 # ktor-vk-auth
 
-A simple vk mini app authentication library for Ktor
+A simple [VK Mini App](https://dev.vk.com/ru/mini-apps/overview) authentication library for Ktor
 
 ## Installation
 ### Gradle
 #### Kotlin
 ```kotlin
 repositories {
-  mavenCentral()
+  maven("https://repo.h4kt.dev/releases")
 }
 
 dependencies {
-  implementation("dev.h4kt:ktor-vk-auth:1.0")
+  implementation("dev.h4kt:ktor-vk-auth:<version>")
 }
 ```
 
